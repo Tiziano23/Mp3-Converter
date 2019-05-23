@@ -1,0 +1,91 @@
+const fs = require('fs');
+const url = require('url');
+const bcrypt = require('bcrypt');
+const express = require('express');
+const fileUpload = require('express-fileupload');
+const ffmpeg = require('fluent-ffmpeg');
+const youtubedl = require('youtube-dl');
+
+const app = express();
+const port = 8080;
+
+ffmpeg.setFfmpegPath('./ffmpeg/bin/ffmpeg.exe');
+ffmpeg.setFfprobePath('./ffmpeg/bin/ffprobe.exe');
+app.use(express.static(__dirname + '/src'));
+app.use(fileUpload());
+
+app.get('/download',(req,res) => {
+  let id = req.query.id;
+  let name = req.query.name;
+  res.download(`./temp/${id}.mp3`,name);
+  setTimeout(() => {
+      fs.unlink(`./temp/${id}.mp3`,()=>{});
+  },5000);
+});
+
+app.post('/convert-url',(req,res) => {
+  let url = new URL(req.body.video_url);
+  let params = new URLSearchParams(url.search);
+
+  if(url.pathname == '/playlist'){
+    /*if(url.pathname == '/watch' && params.get('list')) {
+      url.href = url.protocol+'//'+url.hostname+'/playlist?list='+params.get('list');
+    }*/
+    getVideo(url.href).then(data => {
+      res.end(`{"url":"${data.url}","next":[${data.next}]}`);
+    });
+  } else {
+    getVideo(url.href).then(data => {
+      res.end(`{"url":"${data.url}"}`);
+    });
+  }
+});
+
+async function getVideo(_url){
+  let id = '';
+  let name = '';
+  let next = [];
+  let download = youtubedl(_url);
+  await new Promise(resolve => {
+    download.on('info',info => {
+      name = info.title.replace('%','');
+      bcrypt.hash(info.title,1,(err,hash) => {
+        id = hash.replace(/\//g,'-');
+        download.pipe(fs.createWriteStream(`./temp/${id}.mp4`));
+      });
+    });
+    download.on('end',() => {
+      ffmpeg(`./temp/${id}.mp4`).output(`./temp/${id}.mp3`).on('end',() => {
+        fs.unlink(`./temp/${id}.mp4`,()=>{});
+        resolve();
+      }).run();
+    });
+    download.on('next',(data) => {
+      for (let i = 0;i < data.length;i++){
+        next.push(`"${data[i].webpage_url}"`);
+      }
+    });
+  });
+
+  return {
+    url: `/download?id=${id}&name=${name}.mp3`,
+    next: next
+  };
+}
+
+app.post('/convert-file',(req,res) => {
+  let id = '';
+  let video = req.files.video;
+  bcrypt.hash(video.name,1,(err,hash) => {
+    hash = hash.replace(/\//g,'-');
+    video.mv(`./temp/${hash}.mp4`);
+    ffmpeg(`./temp/${hash}.mp4`).output(`./temp/${hash}.mp3`).on('end',() => {
+      fs.unlink(`./temp/${hash}.mp4`,()=>{});
+      res.end(`/download?id=${hash}&name=${video.name.replace('.mp4','')}.mp3`);
+    }).run();
+  });
+});
+
+app.listen(port,() => {
+    console.log('Server started on port ' + port);
+});
