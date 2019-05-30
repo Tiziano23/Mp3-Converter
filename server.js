@@ -22,7 +22,6 @@ app.get('/download',(req,res) => {
       fs.unlink(`./temp/${id}.mp3`,()=>{});
   },5000);
 });
-
 app.post('/convert-url',(req,res) => {
   let url = new URL(req.body.video_url);
   let params = new URLSearchParams(url.search);
@@ -39,6 +38,18 @@ app.post('/convert-url',(req,res) => {
       res.end(`{"url":"${data.url}"}`);
     });
   }
+});
+app.post('/convert-file',(req,res) => {
+  let id = '';
+  let video = req.files.video_file;
+  bcrypt.hash(video.name,1,(err,hash) => {
+    hash = hash.replace(/\//g,'-');
+    video.mv(`./temp/${hash}.mp4`);
+    ffmpeg(`./temp/${hash}.mp4`).output(`./temp/${hash}.mp3`).on('end',() => {
+      fs.unlink(`./temp/${hash}.mp4`,()=>{});
+      res.end(`{"url":"/download?id=${hash}&name=${video.name.replace('.mp4','')}.mp3"}`);
+    }).run();
+  });
 });
 
 async function getVideo(_url){
@@ -72,19 +83,6 @@ async function getVideo(_url){
     next: next
   };
 }
-
-app.post('/convert-file',(req,res) => {
-  let id = '';
-  let video = req.files.video;
-  bcrypt.hash(video.name,1,(err,hash) => {
-    hash = hash.replace(/\//g,'-');
-    video.mv(`./temp/${hash}.mp4`);
-    ffmpeg(`./temp/${hash}.mp4`).output(`./temp/${hash}.mp3`).on('end',() => {
-      fs.unlink(`./temp/${hash}.mp4`,()=>{});
-      res.end(`/download?id=${hash}&name=${video.name.replace('.mp4','')}.mp3`);
-    }).run();
-  });
-});
 
 app.listen(port,() => {
     console.log('Server started on port ' + port);
