@@ -25,10 +25,12 @@
               <button type="submit" name="search"><i class="fas fa-arrow-right"></i></button>
             </form>
           </div>
+          <span class="spacer-h"><i>or</i></span>
           <div class="search-bar">
             <form action="/convert-file" class="convert-form" method="post" encType="multipart/form-data">
-              <input type="file" name="video" placeholder="Insert video...">
-              <button type="submit" name="search"><i class="fas fa-arrow-right"></i></button>
+              <input type="file" name="video_file" id="video_file">
+              <label for="video_file"><i class="fas fa-upload"></i> Upload video</label>
+              <!-- <button type="submit" name="search"><i class="fas fa-arrow-right"></i></button> -->
             </form>
           </div>
         </div>

@@ -8,6 +8,10 @@
   --background-color:#46e6da;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin:0;
   height: 100vh;
@@ -53,11 +57,10 @@ body {
     height:40px;
     position:absolute;
     line-height: 50px;
-    text-align: center;
-
-    font-size:1.5em;
-    color: #FC1600;
-    transition: color 0.2s;
+  text-align: center;
+  font-size:1.5em;
+  color: #FC1600;
+  transition: color 0.2s;
 }
 #yt-link i::before {
   width:100%;
@@ -74,121 +77,153 @@ body {
     color:#F42;
 }
 
-/* Main page content*/
 .main-content {
-  height: calc(100vh - 85px);
+  height: calc(100vh - 50px);
   margin: 0 150px 0 150px;
   padding-top: 85px;
-  text-align: center;
 }
 
 /* Topbar */
-.topbar {
+.main-content .topbar {
   top: 0;
   left: 0;
-  height: 85px;
   width: 100%;
+  height: 85px;
   position: absolute;
   user-select: none;
 }
-.topbar .title {
+.main-content .topbar .title {
   font-size: 2em;
   text-align: center;
-  font-family: 'Lobster';
   letter-spacing: 2.5px;
+  font-family: 'Lobster';
 }
-.topbar .title a {
+.main-content .topbar .title a {
   color: #EEE;
+  display: inline-block;
   text-decoration: none;
+  transition: transform 0.5s, color 0.5s;
+}
+.main-content .topbar .title a:hover {
+  color: #FFF;
+  transform: scale(1.1);
 }
 
+/* Content */
 .main-content .content {
-  max-width: 768px;
-  padding: 15px 35px;
-  border-radius: 15px;
-  position: relative;
-  margin: 25px auto 0 auto;
-}
-
-.main-content .search-container {
-  top: 0;
-  left: 0;
-  z-index: 1;
+  top: calc(50% - 42.5px);
+  left: 50%;
   width: 100%;
-  height: 85px;
-  padding: 35px 0;
-  background: white;
+  height: 250px;
+  max-width: 768px;
   border-radius: 15px;
   position: absolute;
-  box-shadow: 0 5px 25px rgba(0,0,0,0.45);
+  transform: translate(-50%,-50%);
 }
-.main-content .search-container .search-bar {
+.content .search-container {
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  padding-top: 60px;
+  border-radius: 15px;
+  position: absolute;
+  box-shadow: 0 15px 10px -5px rgba(0,0,0,0.25);
+}
+.content .search-container .search-bar {
   opacity:1;
   width: 80%;
   height: 40px;
   margin: auto;
   display: block;
+  text-align: center;
   line-height: 40px;
   user-select: none;
   position: relative;
   animation: fade-in 0.5s linear both;
 }
-.main-content .search-container .search-bar input{
-  height: 80%;
+.content .search-container .search-bar input{
+  width: calc(100% - 65px);
+  height: 30px;
+  padding: 0 10px;
   outline: none;
   user-select: text;
-  margin-right: 15px;
   border-radius: 15px;
-  border:1px solid #CCC;
-  width: calc(100% - 75px);
-  padding: 5px 0 5px 10px;
-  box-sizing: border-box;
+  border: 1px solid #CCC;
   transition: border 0.5s;
 }
-.main-content .search-container .search-bar input:focus {
+.content .search-container .search-bar input[type="file"] {
+  display: none;
+}
+.content .search-container .search-bar input[type="file"] ~ label {
+  width: 150px;
+  height: 35px;
+  color: white;
+  cursor: pointer;
+  margin-top: 5px;
+  line-height: 35px;
+  text-align: center;
+  border-radius: 35px;
+  display: inline-block;
+  background: var(--accent-color);
+  transition: box-shadow 0.2s, transform 0.4s;
+}
+.content .search-container .search-bar input[type="file"] ~ label:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2.5px 5px rgba(0,0,0,0.2);
+}
+.content .search-container .search-bar input:hover {
+  border-color: #888;
+}
+.content .search-container .search-bar input:focus {
   border-color: #2BF;
 }
-.main-content .search-container .search-bar button[type="submit"]{
+.content .search-container .search-bar button[type="submit"]{
+  float: right;
+  color: #FFF;
   width: 45px;
-  height: 100%;
+  height: 30px;
   padding: 7.5px;
-  color: #EEE;
+  margin-top: 5px;
   border-radius: 45px;
   background: var(--accent-color);
   border: none;
   outline: none;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: box-shadow 0.2s, transform 0.4s;
 }
-.main-content .search-container .search-bar button[type="submit"]:hover {
-  color: #CCC;
+.content .search-container .search-bar button[type="submit"]:hover {
+  transform: scale(1.075);
+  box-shadow: 0 2.5px 5px rgba(0,0,0,0.2);
 }
 
-.main-content .loader-container {
+.content .loader-container {
+  z-index: 0;
   top: 0;
   left: 0;
-  z-index: 0;
   width: 100%;
-  height: 155px;
+  height: 100%;
   background: white;
+  border-radius: 15px;
   position: absolute;
   visibility: hidden;
-  border-radius: 15px;
   transition: visibility 1.5s;
-  box-shadow: 0 5px 25px rgba(0,0,0,0.45);
+  box-shadow: 0 15px 10px -5px rgba(0,0,0,0.25);
 }
-.main-content .loader-container.visible {
+.content .loader-container.visible {
   visibility: visible;
   animation: slide-in 1.5s ease-in-out both;
 }
-.main-content .loader-container p {
+.content .loader-container p {
   top:calc(50% + 50px);
   left:50%;
   margin:0;
   position:absolute;
   transform: translate(-50%,-50%);
 }
-.main-content .loader-container .animation {
+.content .loader-container .animation {
   --duration:1.5s;
   left:0;
   top:50%;
@@ -257,10 +292,37 @@ body {
   }
 }
 
+.spacer-h {
+  width: 90%;
+  margin: 15px 5%;
+  position: relative;
+  text-align: center;
+  display: inline-block;
+}
+.spacer-h::before {
+  content: '';
+  left: 0;
+  top: 50%;
+  width: 100%;
+  z-index: 1;
+  position: absolute;
+  display: inline-block;
+  border-top: 1px solid #CCC;
+}
+.spacer-h i {
+  z-index: 2;
+  padding: 0 10px;
+  background: white;
+  font-style: normal;
+  position: relative;
+  display: inline-block;
+}
+
 /* Footer */
 footer {
     left: 0;
     bottom: 0;
+    height:50px;
     width: 100%;
     color: white;
     background: #444;
