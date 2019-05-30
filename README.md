@@ -5,7 +5,7 @@ To execute this application you'll need [ffmpeg](https://ffmpeg.zeranoe.com/buil
 
 You should have these files in these locations:
 /ffmpeg/bin/ffmpeg.exe
-'          '/ffprobe.exe
-'          '/ffplay.exe
+/ffmpeg/bin/ffprobe.exe
+/ffmpeg/bin/ffplay.exe
 
 Website: [MP3 Converter](#)
