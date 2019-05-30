@@ -14,6 +14,8 @@ ffmpeg.setFfprobePath('./ffmpeg/bin/ffprobe.exe');
 app.use(express.static(__dirname + '/src'));
 app.use(fileUpload());
 
+if(!fs.existsSync('./temp'))fs.mkdirSync('./temp');
+
 app.get('/download',(req,res) => {
   let id = req.query.id;
   let name = req.query.name;
@@ -25,19 +27,9 @@ app.get('/download',(req,res) => {
 app.post('/convert-url',(req,res) => {
   let url = new URL(req.body.video_url);
   let params = new URLSearchParams(url.search);
-
-  if(url.pathname == '/playlist'){
-    /*if(url.pathname == '/watch' && params.get('list')) {
-      url.href = url.protocol+'//'+url.hostname+'/playlist?list='+params.get('list');
-    }*/
-    getVideo(url.href).then(data => {
-      res.end(`{"url":"${data.url}","next":[${data.next}]}`);
-    });
-  } else {
-    getVideo(url.href).then(data => {
-      res.end(`{"url":"${data.url}"}`);
-    });
-  }
+  getVideo(url.href).then(data => {
+    res.end(`{"url":"${data.url}","next":[${data.next}]}`);
+  });
 });
 app.post('/convert-file',(req,res) => {
   let id = '';
@@ -59,11 +51,9 @@ async function getVideo(_url){
   let download = youtubedl(_url);
   await new Promise(resolve => {
     download.on('info',info => {
-      name = info.title.replace('%','');
-      bcrypt.hash(info.title,1,(err,hash) => {
-        id = hash.replace(/\//g,'-');
-        download.pipe(fs.createWriteStream(`./temp/${id}.mp4`));
-      });
+      id = info.display_id + '-' + Math.floor(Date.now() / 1000);
+      name = encodeURIComponent(info.title);
+      download.pipe(fs.createWriteStream(`./temp/${id}.mp4`));
     });
     download.on('end',() => {
       ffmpeg(`./temp/${id}.mp4`).output(`./temp/${id}.mp3`).on('end',() => {

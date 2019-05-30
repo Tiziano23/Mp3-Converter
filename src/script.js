@@ -17,18 +17,14 @@ forms.forEach(f => {
 });
 
 function submitFormAjax(form){
-  loader.classList.add('visible');
-  loader.querySelector('p').innerHTML = 'Converting';
-  setTimeout(() => {
-    loader.style.setProperty('z-index',3);
-  },750);
-
+  toggleLoaderVisibility();
   let formData = new FormData(form);
   let xhttp = new XMLHttpRequest();
   async function handleResponse(e){
+    toggleLoaderVisibility();
     let res = JSON.parse(xhttp.response);
     window.open(res.url, '_blank');
-    if(res.next){
+    if(res.next != ''){
       for(let i = 0;i < res.next.length;i++){
         await new Promise(resolve => {
           let data = new FormData();
@@ -44,11 +40,15 @@ function submitFormAjax(form){
         xhttp.onload = handleResponse;
       }
     }
-    loader.classList.add('done');
+  };
+  xhttp.onload = handleResponse;
+  xhttp.open('POST',form.action);
+  xhttp.send(formData);
+}
+function toggleLoaderVisibility(){
+  if(loader.classList.contains('visible')){
     loader.querySelector('p').innerHTML = 'Done!';
     setTimeout(() => {
-      loader.classList.remove('done');
-      loader.classList.remove('visible');
       loader.style.setProperty('animation','slide-out 1.5s ease-in-out reverse both');
       loader.classList.remove('visible');
       setTimeout(() => {
@@ -58,12 +58,14 @@ function submitFormAjax(form){
         loader.style.removeProperty('animation');
       },1500);
     },2500);
-  };
-  xhttp.onload = handleResponse;
-  xhttp.open('POST',form.action);
-  xhttp.send(formData);
+  } else {
+    loader.classList.add('visible');
+    loader.querySelector('p').innerHTML = 'Converting';
+    setTimeout(() => {
+      loader.style.setProperty('z-index',3);
+    },750);
+  }
 }
-
 function lerp(a,b,p){
   if(typeof a == 'string' && typeof b == 'string'){
     a = a.replace('#','');

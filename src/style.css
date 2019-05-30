@@ -130,7 +130,11 @@ body {
   padding-top: 60px;
   border-radius: 15px;
   position: absolute;
+  animation: fade-in 0.5s linear both;
   box-shadow: 0 15px 10px -5px rgba(0,0,0,0.25);
+}
+.content .search-container > *{
+  animation: fade-in 0.5s 0.1s linear both;
 }
 .content .search-container .search-bar {
   opacity:1;
@@ -142,7 +146,6 @@ body {
   line-height: 40px;
   user-select: none;
   position: relative;
-  animation: fade-in 0.5s linear both;
 }
 .content .search-container .search-bar input{
   width: calc(100% - 65px);
@@ -244,7 +247,7 @@ body {
     transform: translateY(calc(100% + 15px));
   }
   99%{
-    box-shadow: 0 5px 25px rgba(0,0,0,0.45);
+    box-shadow: 0 0 15px rgba(0,0,0,0.25);
   }
   100% {
     transform: translateY(0);
@@ -267,10 +270,10 @@ body {
 }
 @keyframes fade-in {
   0% {
-    top:-10px;
+    top:-25px;
     opacity:0;
   }
-  85% {
+  65% {
     opacity:0;
   }
   100% {
@@ -294,7 +297,7 @@ body {
 
 .spacer-h {
   width: 90%;
-  margin: 15px 5%;
+  margin: 20px 5%;
   position: relative;
   text-align: center;
   display: inline-block;
