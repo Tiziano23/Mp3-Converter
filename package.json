@@ -4,7 +4,7 @@
   "description": "Youtube Video Converter",
   "main": "server.js",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "express": "^4.16.4",
     "express-fileupload": "^1.1.4",
     "express-fileuploader": "0.0.7",
